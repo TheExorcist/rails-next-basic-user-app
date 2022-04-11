@@ -24,7 +24,22 @@ export default function Index() {
   const [alert, setAlert] = React.useState('')
 
   const copyInviteLink = React.useCallback(({ invite_url }) => {
-    navigator.clipboard.writeText(invite_url)
+    if (typeof (navigator.clipboard) == 'undefined') {
+      const textArea = document.createElement("textarea");
+      textArea.value = invite_url;
+      textArea.style.position = "fixed";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+      } catch (err) {
+        console.error('Was not possible to copy te text: ', err);
+      }
+      document.body.removeChild(textArea)
+    } else {
+      navigator.clipboard.writeText(invite_url)
+    }
     setAlert('Copied to clipboard')
     setTimeout(() => setAlert(''), 2000)
   }, [])
